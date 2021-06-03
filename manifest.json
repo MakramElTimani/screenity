@@ -54,14 +54,15 @@
             },
             "description": "__MSG_extStop__"
         },
-        "pause/resume": {
-            "suggested_key": {
-              "default": "Alt+P",
-              "mac": "Alt+P"
-            },
-            "description": "__MSG_extPause__"
-        }
         
+        "_execute_browser_action": {
+          "suggested_key": {
+            "windows": "Ctrl+Shift+Y",
+            "mac": "Command+Shift+Y",
+            "chromeos": "Ctrl+Shift+U",
+            "linux": "Ctrl+Shift+J"
+          }
+        }
     }
 }
 
