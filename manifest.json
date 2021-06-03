@@ -6,7 +6,7 @@
   "manifest_version": 2,
   "default_locale": "en",
   "background": {
-    "scripts": ["js/libraries/socket.io.min.js", "js/background.js"],
+    "scripts": ["js/libraries/socket.io.min.js", "js/background.js", "js/libraries/ffmpeg.min.js"],
     "persistent": false
   },
     

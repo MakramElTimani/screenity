@@ -71,12 +71,12 @@ function newRecording(stream) {
     // Start Media Recorder
     if (quality == "max") {
         mediaConstraints = {
-            mimeType: 'video/webm;codecs=h264'
+            mimeType: 'video/webm;codecs=vp8,opus'
             // mimeType: 'video/mp4; codecs="avc1.424028, mp4a.40.2"'
         }
     } else {
         mediaConstraints = {
-            mimeType: 'video/webm;codecs=h264',
+            mimeType: 'video/webm;codecs=vp8,opus',
             // mimeType: 'video/mp4; codecs="avc1.424028, mp4a.40.2"',
             bitsPerSecond: 1000
         }
