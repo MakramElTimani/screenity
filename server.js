@@ -16,6 +16,11 @@ server.listen(3000, () => {
 });
 
 
+const { exec } = require('child_process');
+
+
+
+
 var ffmpegPath = require('@ffmpeg-installer/ffmpeg').path;
 var ffmpeg = require('fluent-ffmpeg');
 const { SSL_OP_EPHEMERAL_RSA } = require('constants');
@@ -34,7 +39,7 @@ io.on('connection', client => {
     })
 
 
-    //let fileWriter = fs.createWriteStream('demo.webm')
+    let fileWriter = fs.createWriteStream('demo.webm')
     let blobs = 0;
 
     // const spawn = require('child_process').spawn;
@@ -54,34 +59,37 @@ io.on('connection', client => {
 
     // let counterFW = fs.createWriteStream('recordings/file' + counter + '.webm');
     let chunks = [];
+    let isRunning = false;
     client.on('fileData', (data) => {
         console.log('received data');
-        fs.appendFile('demo.webm', data, null, (err) => {
-            if(err){
-                console.log(err);
-            }
-            if(blobs % 10 == 0){
-                fs.readFile('demo.webm', (error, data) =>{
-                    if(error){
-                        console.log(error);
-                    }
-                    fs.writeFile('recordings/demo'+counter+'.mp4', Buffer.from(webmToMp4(data)), (err, data) => {
-                        if(!err){
-                            if(fs.existsSync('demo.webm')){
-                                fs.unlinkSync('demo.webm')
-                            }    
-                        }
-                        counter++;
-                    });
+        fileWriter.write(data);
+        // fs.appendFile('demo.webm', data, null, (err) => {
+        //     if(err){
+        //         console.log(err);
+        //     }
+        //     if(blobs % 10 == 0){
+        //         fs.readFile('demo.webm', (error, data) =>{
+        //             if(error){
+        //                 console.log(error);
+        //             }
+        //             fs.writeFile('recordings/demo'+counter+'.mp4', Buffer.from(webmToMp4(data)), (err, data) => {
+        //                 if(!err){
+        //                     if(fs.existsSync('demo.webm')){
+        //                         fs.unlinkSync('demo.webm')
+        //                     }    
+        //                 }
+        //                 counter++;
+        //             });
                     
-                })
-                //fs.writeFile('recordings/demo.mp4', Buffer.)
-                // if(fs.existsSync('demo'+counter+'.webm')){
-                //     fs.unlinkSync('demo'+counter+'.webm')
-                // }
-            }
-        });
+        //         })
+        //         //fs.writeFile('recordings/demo.mp4', Buffer.)
+        //         // if(fs.existsSync('demo'+counter+'.webm')){
+        //         //     fs.unlinkSync('demo'+counter+'.webm')
+        //         // }
+        //     }
+        // });
         blobs ++;
+        
         
         // chunks.push(data);
         // // counterFW.write(data);
@@ -95,6 +103,22 @@ io.on('connection', client => {
         //     // chunks = [];
         // }
     })
+
+    runChildProcess = () => {
+        const ffpegCommand = exec(__dirname + '/ffmpeg_build/bin/ffmpeg.exe -i demo.webm -fflags +genpts -r 25 demotest.mp4', function (error, stdout, stderr) {
+            if (error) {
+              console.log(error.stack);
+              console.log('Error code: '+error.code);
+              console.log('Signal received: '+error.signal);
+            }
+            console.log('Child Process STDOUT: '+stdout);
+            console.log('Child Process STDERR: '+stderr);
+        });
+          
+        ffpegCommand.on('exit', function (code) {
+        console.log('Child process exited with exit code '+code);
+        });
+    }
 
     convertTOMp4Every10Seconds = async (index) => {
         // const fw = fs.createWriteStream('file.webm');
@@ -162,7 +186,8 @@ io.on('connection', client => {
 
 
     client.on('stopRecording', (data) => {
-        // fileWriter.close();
+        fileWriter.close();
+        // runChildProcess();
         // shouldPause = false;
         // //convert video to mp4
 
